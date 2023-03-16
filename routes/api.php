@@ -21,3 +21,5 @@ use Illuminate\Support\Facades\Route;
 Route::post('clients', 'ClientsController@store');
 
 Route::get('clients', 'ClientsController@index');
+
+Route::put('clients/{id}', 'ClientsController@update');

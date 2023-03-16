@@ -10,14 +10,13 @@ use App\traits\RefreshCacheTest;
 
 class ClientsTest extends TestCase
 {
-    //use RefreshDatabase;
     use RefreshCacheTest;
+    
+    use RefreshDatabase;
   
     /** @test */
     public function storeClients()
     {
-        $this->RefreshCacheTest();
-
         $this->WithoutExceptionHandling();
                 
         $params = [
@@ -42,13 +41,13 @@ class ClientsTest extends TestCase
         $this->assertEquals($client_last->email, $params['email']);
 
         $this->assertEquals($client_last->phone, $params['phone']);
+
+        $this->RefreshCacheTest();
     }
 
     /** @test */
     public function getClients()
     {
-        $this->RefreshCacheTest();
-        
         $this->WithoutExceptionHandling();
 
         $params = [
@@ -57,7 +56,7 @@ class ClientsTest extends TestCase
             'phone' => '66799999',  
         ]; 
 
-        $response = $this->post('/api/clients', $params);
+        $this->post('/api/clients', $params);
 
         $response = $this->get('/api/clients');  
 
@@ -68,5 +67,33 @@ class ClientsTest extends TestCase
         $this->assertArrayHasKey(0, $response);
 
         $response->assertJsonFragment($params);
+
+        $this->RefreshCacheTest();
+    }
+
+    /** @test */
+    public function updateClint()
+    {
+        $this->WithoutExceptionHandling();
+
+        $params = [
+            'name' => 'jack',
+            'email' => 'jack@gmail.com',
+            'phone' => '66799999',  
+        ];         
+
+        $this->post('/api/clients', $params);
+
+        $params_update = [
+            'name' => 'jack2222',
+            'email' => 'jack@gmail.com',
+            'phone' => '66799999',  
+        ];         
+
+        $response = $this->put('/api/clients/1', $params_update);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('clients', $params_update);        
     }
 }
