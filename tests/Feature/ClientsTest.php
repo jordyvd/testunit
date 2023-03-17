@@ -12,8 +12,29 @@ class ClientsTest extends TestCase
 {
     use RefreshCacheTest;
     
-    use RefreshDatabase;
-  
+    use RefreshDatabase;  
+
+    /** @test */
+    public function validateRequiredStoreClients()
+    {
+        // $this->WithoutExceptionHandling();
+
+        $params = [
+            'name' => '',
+            'email' => 'jackgmail.com',
+            'phone' => '66799999',  
+        ]; 
+
+        $response = $this->post('/api/clients', $params);
+
+        $response->assertStatus(302);
+        
+        $response->assertSessionHasErrors(['name', 'email']);
+
+        $this->RefreshCacheTest();
+    }
+
+
     /** @test */
     public function storeClients()
     {
@@ -72,7 +93,7 @@ class ClientsTest extends TestCase
     }
 
     /** @test */
-    public function updateClint()
+    public function updateClient()
     {
         $this->WithoutExceptionHandling();
 
@@ -90,10 +111,42 @@ class ClientsTest extends TestCase
             'phone' => '66799999',  
         ];         
 
-        $response = $this->put('/api/clients/1', $params_update);
+        $last_client = DB::selectOne('select id, name, email from clients order by id desc limit 1');
+
+        $response = $this->put('/api/clients/'.$last_client->id, $params_update);
 
         $response->assertStatus(200);
 
-        $this->assertDatabaseHas('clients', $params_update);        
+        $this->assertNotEquals($last_client->name, $params_update['name']);        
+
+        $this->assertEquals($last_client->email, $params_update['email']);    
+
+        $this->RefreshCacheTest();    
+    }
+
+    /** @test */
+    public function deleteClient()
+    {   
+        $this->WithoutExceptionHandling();
+
+        $params = [
+            'name' => 'jack',
+            'email' => 'jack@gmail.com',
+            'phone' => '66799999',  
+        ];         
+
+        $this->post('/api/clients', $params);
+
+        $last_client = DB::selectOne('select id, name from clients order by id desc limit 1');
+
+        $response = $this->delete('/api/clients/'. $last_client->id);
+
+        $response->assertStatus(200);
+
+        $last_client = DB::select('select id, name from clients order by id desc limit 1');
+
+        $this->assertCount(0, $last_client);
+
+        $this->RefreshCacheTest();
     }
 }

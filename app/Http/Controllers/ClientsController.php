@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreClientRequest;
 
 class ClientsController extends Controller
 {
-    public function store(Request $request)
+    public function store(StoreClientRequest $request)
     {
         $procedure = "insert into clients(name, email, phone) values(?,?,?)";
         $params = [
@@ -36,4 +37,10 @@ class ClientsController extends Controller
         ];
         DB::statement($procedure, $params);
     }
+
+    public function delete($id)
+    {
+        DB::statement("delete from clients where id = ?", [$id]);
+    }
+
 }
