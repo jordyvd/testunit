@@ -50,7 +50,7 @@ class ClientsTest extends TestCase
 
         $response = $this->post('/api/clients', $params);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200);  
 
         $this->assertDatabaseCount('clients', $count + 1);
         
@@ -143,9 +143,9 @@ class ClientsTest extends TestCase
 
         $response->assertStatus(200);
 
-        $last_client = DB::select('select id, name from clients order by id desc limit 1');
+        $client = DB::select('select id, name from clients where id = ? order by id desc limit 1', [$last_client->id]);
 
-        $this->assertCount(0, $last_client);
+        $this->assertCount(0, $client); 
 
         $this->RefreshCacheTest();
     }
