@@ -43,4 +43,13 @@ class ClientsController extends Controller
         DB::statement("delete from clients where id = ?", [$id]);
     }
 
+    public function storeCards(Request $request)
+    {
+        $procedure = "insert into phones(number) values(?)";
+        $params = [
+            $request->number
+        ];
+        DB::statement($procedure, $params);
+    }
+
 }

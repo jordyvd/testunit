@@ -10,7 +10,7 @@ use App\traits\RefreshCacheTest;
 
 class Clients2Test extends TestCase
 {
-    use RefreshDatabase; 
+    //use RefreshDatabase; 
 
     use RefreshCacheTest;
 
@@ -142,4 +142,16 @@ class Clients2Test extends TestCase
 
         $reponse->assertSessionHasErrors(['email']);
     }
+    /** @test */
+    public function storeCards()
+    {
+        $this->WithoutExceptionHandling();   
+        $params = [
+            "number" => "18998899",
+        ];
+
+        $reponse = $this->post('/api/cards', $params);
+
+        $reponse->assertStatus(200);
+    } 
 }
