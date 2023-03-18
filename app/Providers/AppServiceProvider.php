@@ -13,9 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        if(!$this->app->environment('testing') && env('TESTING_IN_PRGRESS') == true){
-            throw new \Exception ('no estas en el ambiente de prueba!');
-        }
+
     }
 
     /**
